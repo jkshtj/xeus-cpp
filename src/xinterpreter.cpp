@@ -247,6 +247,7 @@ namespace xcpp
 
     interpreter::interpreter(int argc, const char* const* argv)
         : m_interpreter(std::move(create_interpreter(Args() /*argv + 1, argv + argc)*/, DiagPrinter.get())))
+        , input_validator()
         , m_version(get_stdopt(argc, argv))
         ,  // Extract C++ language standard version from command-line option
         xmagics()
@@ -415,6 +416,31 @@ namespace xcpp
 
     nl::json interpreter::is_complete_request_impl(const std::string& code)
     {
+        nl::json kernel_res;
+
+        // input_validator.reset(code);
+        xpp::input_validator::ValidationResult Res = input_validator.validate(code, m_interpreter->getCompilerInstance());
+        
+        if (Res == xpp::input_validator::ValidationResult::complete)
+        {
+            kernel_res["status"] = "complete";
+        }
+        else if (Res == xpp::input_validator::ValidationResult::incomplete)
+        {
+            kernel_res["status"] = "incomplete";
+        }
+        else if (Res == xpp::input_validator::ValidationResult::invalid)
+        {
+            kernel_res["status"] = "invalid";
+        }
+        else
+        {
+            kernel_res["status"] = "unknown";
+        }
+        kernel_res["indent"] = "";
+        return kernel_res;
+
+        
         return xeus::create_is_complete_reply("complete", "   ");
     }
 

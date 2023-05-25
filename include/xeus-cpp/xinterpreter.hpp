@@ -25,6 +25,7 @@
 #include "xbuffer.hpp"
 #include "xeus_cpp_config.hpp"
 #include "xmanager.hpp"
+#include "input_validator.hpp"
 
 namespace nl = nlohmann;
 
@@ -79,6 +80,7 @@ namespace xcpp
         std::string get_stdopt(int argc, const char* const* argv);
 
         std::unique_ptr<clang::Interpreter> m_interpreter;
+        xpp::input_validator input_validator;
 
         std::string m_version;
 
